@@ -16,5 +16,5 @@ class Solution:
                     if n <= 0 :
                         return True
         
-        return i <= 0
+        return n <= 0
         
