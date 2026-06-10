@@ -1,0 +1,20 @@
+class Solution:
+    def isValid(self, s: str) -> bool:
+        brac_f = {
+            ')' :'(',
+            ']' :'[',
+            '}' :'{'
+            }
+
+        stack = []
+
+        for char in s:
+            if char in brac_f :
+                top_element = stack.pop() if stack else '#'
+                if brac_f[char] != top_element :
+                     return False
+
+            else:
+                stack.append(char)
+
+        return len(stack) == 0 
