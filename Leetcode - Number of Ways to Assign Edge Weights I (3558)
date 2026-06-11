@@ -1,0 +1,31 @@
+from collections import defaultdict, deque
+from typing import List
+
+class Solution:
+    def assignEdgeWeights(self, edges: List[List[int]]) -> int:
+        MOD = 10**9 + 7
+        
+        n = len(edges) + 1
+        graph = defaultdict(list)
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        depth = [0] * (n + 1)
+        queue = deque([1])
+        visited = [False] * (n + 1)
+        visited[1] = True
+        
+        while queue:
+            node = queue.popleft()
+            for neighbor in graph[node]:
+                if not visited[neighbor]:
+                    visited[neighbor] = True
+                    depth[neighbor] = depth[node] + 1
+                    queue.append(neighbor)
+        
+        maxDepth = max(depth)
+        L = maxDepth
+        
+        result = pow(2, L - 1, MOD)
+        return result
