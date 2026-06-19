@@ -1,0 +1,12 @@
+class Solution(object):
+    def largestAltitude(self, gain):
+        """
+        :type gain: List[int]
+        :rtype: int
+        """
+        length = len(gain)
+        result = [0] * (length + 1)
+
+        for i in range(length):
+            result[i+1] = gain [i] + result[i]
+        return max(result)
