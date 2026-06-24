@@ -1,0 +1,57 @@
+class Solution:
+    MOD = 10**9 + 7
+
+    def multiply(self, A, B):
+        n = len(A)
+        C = [[0] * n for _ in range(n)]
+
+        for i in range(n):
+            for k in range(n):
+                if A[i][k]:
+                    for j in range(n):
+                        C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % self.MOD
+
+        return C
+
+    def power(self, A, n):
+        size = len(A)
+        res = [[0] * size for _ in range(size)]
+
+        for i in range(size):
+            res[i][i] = 1
+
+        while n:
+            if n & 1:
+                res = self.multiply(res, A)
+            A = self.multiply(A, A)
+            n >>= 1
+
+        return res
+
+    def zigZagArrays(self, n: int, l: int, r: int) -> int:
+        m = r - l + 1
+
+        if n == 1:
+            return m
+
+        size = 2 * m
+        T = [[0] * size for _ in range(size)]
+
+        for x in range(m):
+            for y in range(x + 1, m):
+                T[m + x][y] = 1
+
+            for y in range(x):
+                T[x][m + y] = 1
+
+        start = [1] * size
+
+        P = self.power(T, n - 1)
+
+        ans = [0] * size
+
+        for i in range(size):
+            for j in range(size):
+                ans[i] = (ans[i] + P[i][j] * start[j]) % self.MOD
+
+        return sum(ans) % self.MOD
