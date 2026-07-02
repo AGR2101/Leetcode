@@ -1,0 +1,39 @@
+class Solution(object):
+    def findSafeWalk(self, grid, health):
+        """
+        :type grid: List[List[int]]
+        :type health: int
+        :rtype: bool
+        """
+        m, n = len(grid), len(grid[0])
+        
+        visited = [[-1] * n for _ in range(m)]
+        
+        queue = deque()
+        start_health = health - grid[0][0]
+        
+        if start_health <= 0:
+            return False
+        
+        queue.append((0, 0, start_health))
+        visited[0][0] = start_health
+        
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        
+        while queue:
+            row, col, curr_health = queue.popleft()
+            
+            if row == m - 1 and col == n - 1:
+                return True
+            
+            for dr, dc in directions:
+                nr, nc = row + dr, col + dc
+                
+                if 0 <= nr < m and 0 <= nc < n:
+                    new_health = curr_health - grid[nr][nc]
+                    
+                    if new_health > 0 and new_health > visited[nr][nc]:
+                        visited[nr][nc] = new_health
+                        queue.append((nr, nc, new_health))
+        
+        return False
