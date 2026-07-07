@@ -1,0 +1,13 @@
+class Solution:
+    def sumAndMultiply(self, n: int) -> int:
+        p = 1
+        x = 0
+        s = 0
+        while n > 0:
+            d = n % 10
+            s += d
+            if d != 0:
+                x += d * p
+                p *= 10
+            n //= 10
+        return x * s
