@@ -1,0 +1,70 @@
+from typing import List
+from collections import deque
+
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[int]:
+        sorted_indices = sorted(range(n), key=lambda i: nums[i])
+        graph = [[] for _ in range(n)]
+        left = 0
+        
+        for right in range(n):
+            while nums[sorted_indices[right]] - nums[sorted_indices[left]] > maxDiff:
+                left += 1
+            
+            for i in range(left, right):
+                u = sorted_indices[i]
+                v = sorted_indices[right]
+                if u != v:
+                    graph[u].append(v)
+                    graph[v].append(u)
+        
+        comp_id = [-1] * n
+        comps = []
+        
+        for i in range(n):
+            if comp_id[i] == -1:
+                queue = deque([i])
+                comp_id[i] = len(comps)
+                comp_nodes = []
+                
+                while queue:
+                    u = queue.popleft()
+                    comp_nodes.append(u)
+                    for v in graph[u]:
+                        if comp_id[v] == -1:
+                            comp_id[v] = comp_id[i]
+                            queue.append(v)
+                
+                comps.append(comp_nodes)
+        
+        comp_queries = [[] for _ in range(len(comps))]
+        for idx, (u, v) in enumerate(queries):
+            if comp_id[u] != comp_id[v]:
+                comp_queries[comp_id[u]].append((idx, u, v, -1))
+            else:
+                comp_queries[comp_id[u]].append((idx, u, v, 0))
+        
+        answers = [-1] * len(queries)
+        
+        for cid, comp_nodes in enumerate(comps):
+            node_queries = {}
+            for idx, u, v, _ in comp_queries[cid]:
+                if u not in node_queries:
+                    node_queries[u] = []
+                node_queries[u].append((idx, v))
+            
+            for src in node_queries:
+                dist = {src: 0}
+                queue = deque([src])
+                
+                while queue:
+                    u = queue.popleft()
+                    for w in graph[u]:
+                        if w not in dist:
+                            dist[w] = dist[u] + 1
+                            queue.append(w)
+                
+                for idx, target in node_queries[src]:
+                    answers[idx] = dist.get(target, -1)
+        
+        return answers
