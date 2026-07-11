@@ -1,0 +1,38 @@
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def countCompleteComponents(self, n: int, edges: List[List[int]]) -> int:
+        graph = defaultdict(list)
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        visited = [False] * n
+        complete_count = 0
+        
+        def dfs(node, component):
+            visited[node] = True
+            component.append(node)
+            for neighbor in graph[node]:
+                if not visited[neighbor]:
+                    dfs(neighbor, component)
+        
+        for i in range(n):
+            if not visited[i]:
+                component = []
+                dfs(i, component)
+                
+                vertices = len(component)
+                edge_count = 0
+                for node in component:
+                    for neighbor in graph[node]:
+                        if neighbor in component:
+                            edge_count += 1
+                edge_count //= 2
+                
+                expected_edges = vertices * (vertices - 1) // 2
+                if edge_count == expected_edges:
+                    complete_count += 1
+        
+        return complete_count
