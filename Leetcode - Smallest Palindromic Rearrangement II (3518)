@@ -1,0 +1,66 @@
+class Solution:
+    def smallestPalindrome(self, s: str, k: int) -> str:
+        n = len(s)
+        bucket = [0] * 26
+        
+        for ch in s:
+            bucket[ord(ch) - 97] += 1
+        
+        mid_char = ''
+        if n % 2 == 1:
+            for i in range(26):
+                if bucket[i] % 2 == 1:
+                    mid_char = chr(i + 97)
+                    bucket[i] -= 1
+                    break
+        
+        half = [0] * 26
+        total = 0
+        for i in range(26):
+            half[i] = bucket[i] // 2
+            total += half[i]
+        
+        def count_permutations(freq, remaining):
+            ways = 1
+            for i in range(26):
+                if freq[i] == 0:
+                    continue
+                c = 1
+                r = min(freq[i], remaining - freq[i])
+                for j in range(1, r + 1):
+                    c = c * (remaining - j + 1) // j
+                    if c > k:
+                        return k + 1
+                ways *= c
+                if ways > k:
+                    return k + 1
+                remaining -= freq[i]
+            return ways
+        
+        total_perms = count_permutations(half[:], total)
+        if k > total_perms:
+            return ""
+        
+        k -= 1
+        result = []
+        remaining = total
+        
+        for pos in range(total):
+            for i in range(26):
+                if half[i] == 0:
+                    continue
+                
+                half[i] -= 1
+                perms = count_permutations(half, remaining - 1)
+                
+                if k >= perms:
+                    k -= perms
+                    half[i] += 1
+                else:
+                    result.append(chr(i + 97))
+                    remaining -= 1
+                    break
+        
+        left = ''.join(result)
+        right = left[::-1]
+        return left + mid_char + right if mid_char else left + right
