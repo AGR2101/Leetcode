@@ -1,0 +1,71 @@
+class Solution:
+    def longestRepeating(self, s: str, queryCharacters: str, queryIndices: list[int]) -> list[int]:
+        n = len(s)
+        size = 1
+        while size < n:
+            size *= 2
+
+        left = [''] * (2 * size)
+        right = [''] * (2 * size)
+        pref = [0] * (2 * size)
+        suff = [0] * (2 * size)
+        best = [0] * (2 * size)
+        length = [0] * (2 * size)
+
+        for i, c in enumerate(s):
+            p = size + i
+            left[p] = right[p] = c
+            pref[p] = suff[p] = best[p] = 1
+            length[p] = 1
+
+        for p in range(size - 1, 0, -1):
+            l, r = p * 2, p * 2 + 1
+            length[p] = length[l] + length[r]
+
+            left[p] = left[l] if length[l] else left[r]
+            right[p] = right[r] if length[r] else right[l]
+
+            pref[p] = pref[l]
+            if pref[l] == length[l] and right[l] == left[r]:
+                pref[p] += pref[r]
+
+            suff[p] = suff[r]
+            if suff[r] == length[r] and right[l] == left[r]:
+                suff[p] += suff[l]
+
+            best[p] = max(best[l], best[r])
+            if right[l] == left[r]:
+                best[p] = max(best[p], suff[l] + pref[r])
+
+        ans = []
+
+        for c, idx in zip(queryCharacters, queryIndices):
+            p = size + idx
+            left[p] = right[p] = c
+            pref[p] = suff[p] = best[p] = 1
+
+            p //= 2
+            while p:
+                l, r = p * 2, p * 2 + 1
+                length[p] = length[l] + length[r]
+
+                left[p] = left[l] if length[l] else left[r]
+                right[p] = right[r] if length[r] else right[l]
+
+                pref[p] = pref[l]
+                if pref[l] == length[l] and right[l] == left[r]:
+                    pref[p] += pref[r]
+
+                suff[p] = suff[r]
+                if suff[r] == length[r] and right[l] == left[r]:
+                    suff[p] += suff[l]
+
+                best[p] = max(best[l], best[r])
+                if right[l] == left[r]:
+                    best[p] = max(best[p], suff[l] + pref[r])
+
+                p //= 2
+
+            ans.append(best[1])
+
+        return ans
