@@ -1,0 +1,7 @@
+class Solution:
+    def uniformArray(self, nums1: list[int]) -> bool:
+        odds = [x for x in nums1 if x % 2 == 1]
+        if not odds:
+            return True
+        min_odd = min(odds)
+        return not any(x % 2 == 0 and x < min_odd for x in nums1)
