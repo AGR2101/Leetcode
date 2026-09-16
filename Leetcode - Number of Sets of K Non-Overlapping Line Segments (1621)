@@ -1,0 +1,15 @@
+class Solution:
+    def numberOfSets(self, n: int, k: int) -> int:
+        MOD = 10**9 + 7
+
+        def comb(n, r):
+            if r > n - r:
+                r = n - r
+
+            res = 1
+            for i in range(1, r + 1):
+                res = res * (n - r + i) // i
+
+            return res % MOD
+
+        return comb(n + k - 1, 2 * k)
