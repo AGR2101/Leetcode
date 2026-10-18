@@ -1,0 +1,17 @@
+
+class Solution:
+    def numOfWays(self, nums: List[int]) -> int:
+        MOD = 10**9 + 7
+
+        def solve(arr):
+            if len(arr) <= 2:
+                return 1
+
+            left = [x for x in arr[1:] if x < arr[0]]
+            right = [x for x in arr[1:] if x > arr[0]]
+
+            return (comb(len(left) + len(right), len(left)) *
+                    solve(left) * solve(right)) % MOD
+
+        from math import comb
+        return (solve(nums) - 1) % MOD
